@@ -3,30 +3,39 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math/rand"
 	"strconv"
 )
 
-func generateNIK(gender string, tahun string, jumlahYangDigenerate int) []string {
-	result := make([]string, jumlahYangDigenerate+1)
+func generateNIPs(
+	ikhwanOrAkhwat string,
+	year string,
+	month, count, start int) []string {
+	result := []string{}
 	var g string
-	if gender == "ikhwan" {
+	if ikhwanOrAkhwat == "ikhwan" {
 		g = "N"
 	} else {
 		g = "T"
 	}
 
-	for i := 1; i < jumlahYangDigenerate+1; i++ {
-		semester := rand.Intn(2) + 1
-		nik := fmt.Sprintf("AR%s%s%d-%05d",
+	var semester string
+	if month < 6 {
+		semester = "1"
+	} else {
+		semester = "2"
+	}
+
+	for i := 0; i < count; i++ {
+		nik := fmt.Sprintf("AR%s%s%s-%05d",
 			g,
-			tahun[len(tahun)-2:],
+			year[len(year)-2:],
 			semester,
-			i)
-		result[i] = nik
+			start+i)
+		result = append(result, nik)
 	}
 
 	return result
+
 }
 
 func generateNIKLanjutan(nik string, jumlahYangDigenerate int) ([]string, error) {
@@ -53,16 +62,19 @@ func generateNIKLanjutan(nik string, jumlahYangDigenerate int) ([]string, error)
 }
 
 func main() {
-	result := generateNIK("ikhwan", "2023", 10)
+	result := generateNIPs("ikhwan", "2023", 10, 10, 1)
 	for _, nik := range result {
 		fmt.Println(nik)
 	}
 
 	var err error
 	result, err = generateNIKLanjutan("ARN342-00001", 10)
-	fmt.Println(err)
-	for _, nik := range result {
-		fmt.Println(nik)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		for _, nik := range result {
+			fmt.Println(nik)
+		}
 	}
 }
 
